@@ -10,6 +10,8 @@ const electron = require("electron");
 const state = {};
 const windows =     {
     main: pathAction("./src/main"),
+    tool: pathAction("./src/tool"),
+    icon: {svg: "./src/dump/QuestHomesLogo.png"}
 };
 
 if (require('electron-squirrel-startup')) {
@@ -24,6 +26,7 @@ var window = async (path=windows.main.html) => {
                 width: 800,
                 height: 600,
                 resizable: false,
+                icon: windows.icon.svg,
                 webPreferences: {
                     devTools: true,
                     nodeIntegration: true,
@@ -32,7 +35,6 @@ var window = async (path=windows.main.html) => {
                 },
             },
         ), state.window.loadFile(path);
-        console.log(path)
     } else {
         state.window.loadFile(path);
     };
@@ -55,10 +57,15 @@ const createSeparators = (listOfLabels) => {
 };
 
 const menu = (opts={dev: true}, template=[]) => {
+    let tool = {
+        label: "builder",
+        click() {window(windows.tool.html)}
+    }
     let dev = {
         label: "dev",
         submenu: createSeparators([{label: "console", click() {state.window.webContents.openDevTools();}}])
     };
+    template.push(tool)
     if (opts.dev){template.push(dev)};
     let BuiltMenu = electron.Menu.buildFromTemplate(createSeparators(template));
     electron.Menu.setApplicationMenu(BuiltMenu);
